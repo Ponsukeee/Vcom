@@ -1,4 +1,3 @@
-# Comumu
-VRSNS
+# Vcom
 
 製作中
