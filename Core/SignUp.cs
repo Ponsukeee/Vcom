@@ -2,6 +2,7 @@
 using TMPro;
 using UnityEngine;
 using VRUtils.Components;
+using VRUtils.InputModule;
 
 namespace VRSNS.Core
 {

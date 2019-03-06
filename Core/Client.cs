@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using MagicOnionClient;
 using UniRx;
@@ -20,6 +21,7 @@ public class Client : MonoBehaviour
     private User User { get; set; }
     public VRMAvatar Avatar { get; private set; }
     private GameClient gameClient;
+    public bool InRoom { get; private set; }
 
     private void Awake()
     {
@@ -33,7 +35,7 @@ public class Client : MonoBehaviour
         {
             User = await User.CreateAsync(restServerHostName, name, email, password, passwordConfirmation);
             await SetUpAvatar();
-            await ConnectGameServer();
+            await JoinRoom();
             Notification.Notify($"{User.Name}様のアカウントを作成しました");
         }
         catch (Exception e)
@@ -50,7 +52,7 @@ public class Client : MonoBehaviour
         {
             User = await User.SigninAsync(restServerHostName, email, password);
             await SetUpAvatar();
-            await ConnectGameServer();
+            await JoinRoom();
             Notification.Notify($"ようこそ{User.Name}様");
         }
         catch (Exception e)
@@ -61,12 +63,6 @@ public class Client : MonoBehaviour
         }
     }
 
-    public async void JoinRoom(string roomID)
-    {
-        await gameClient.JoinRoom(moServerHostName, User.Name, roomID);
-        await gameClient.GenerateAvatarForOthers(Avatar);
-    }
-
     private async Task SetUpAvatar()
     {
         var avatarData = await User.DownloadVrmAsync();
@@ -75,16 +71,38 @@ public class Client : MonoBehaviour
         {
             model.gameObject.SetActive(false);
         }
+
         var synchronizer = Avatar.Root.AddComponent<AvatarSynchronizer>();
         synchronizer.SetTargets(head, rightHand, leftHand);
         synchronizer.OnMove.Subscribe(avatarTransform => gameClient.SynchronizeAvatar(avatarTransform));
         synchronizer.isMine = true;
+
+        var voiceChat = Avatar.Root.AddComponent<VoiceChat>();
+        voiceChat.StartVoiceChat();
+        voiceChat.OnSampleReady += gameClient.Speak;
     }
 
-    private async UniTask ConnectGameServer()
+    public async UniTask JoinRoom(string roomID = "")
     {
-        await gameClient.JoinRoom(moServerHostName, User.Name);
-        await gameClient.GenerateAvatarForOthers(Avatar);
+        try
+        {
+            if (roomID.Equals(""))
+            {
+                await gameClient.JoinRoom(moServerHostName, User.Name);
+            }
+            else
+            {
+                await gameClient.JoinRoom(moServerHostName, User.Name, roomID);
+            }
+            
+            await gameClient.GenerateAvatarForOthers(Avatar);
+            InRoom = true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     public async UniTask<RoomInfo[]> GetRooms()
@@ -129,7 +147,10 @@ public class Client : MonoBehaviour
     private async void OnApplicationQuit()
     {
         if (User != null)
+        {
             await gameClient.DisposeAsync();
+            InRoom = false;
+        }
     }
 }
 }

@@ -1,5 +1,6 @@
 ﻿using Components.Controller;
 using VRUtils.Components;
+using VRUtils.InputModule;
 
 namespace VRUtils.Components
 {
@@ -12,7 +13,7 @@ public class GenerateDragging : GrabbableBase, IInputModule
             case InputType.Click:
                 Grab(deviceInfo);
                 break;
-            case InputType.Drag:
+            case InputType.Clicking:
                 Drag(deviceInfo);
                 break;
             case InputType.Release:

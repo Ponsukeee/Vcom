@@ -10,7 +10,7 @@ public class PanelAnimation : MonoBehaviour
 {
     [SerializeField] private GameObject head;
     [SerializeField] private float animationFrame;
-    [SerializeField] private GestureInputModule[] gestureInputModules;
+    [SerializeField] private GestureInputModuleBehaviour[] gestureInputModulesBehaviour;
 
     private Vector3 defaultScale;
     private Transform uiTransform;
@@ -25,14 +25,17 @@ public class PanelAnimation : MonoBehaviour
 
         var verticalMinScale = new Vector3(defaultScale.x, 0f, defaultScale.z);
         var horizontalMinScale = new Vector3(0f, defaultScale.y, defaultScale.z);
-        var verticalShiftValue = uiTransform.up * defaultScale.y / 2;
-        var horizontalShiftValue = uiTransform.right * defaultScale.x / 2;
-        foreach (var module in gestureInputModules)
+
+        var rect = GetComponent<RectTransform>();
+        var canvasSize = Vector3.Scale(new Vector3(rect.rect.width, rect.rect.height, 0f), defaultScale);
+        var verticalShiftValue = uiTransform.up * canvasSize.y / 2;
+        var horizontalShiftValue = uiTransform.right * canvasSize.x / 2;
+        foreach (var module in gestureInputModulesBehaviour)
         {
-            module.OnUpDirection.Subscribe(source => PlayAnimation(source, verticalMinScale, -verticalShiftValue, defaultScale.y / animationFrame));
-            module.OnDownDirection.Subscribe(source => PlayAnimation(source, verticalMinScale, verticalShiftValue, defaultScale.y / animationFrame));
-            module.OnRightDirection.Subscribe(source => PlayAnimation(source, horizontalMinScale, -horizontalShiftValue, defaultScale.x / animationFrame));
-            module.OnLeftDirection.Subscribe(source => PlayAnimation(source, horizontalMinScale, horizontalShiftValue, defaultScale.x / animationFrame));
+            module.OnUpDirection.Subscribe(source => PlayAnimation(source, verticalMinScale, -verticalShiftValue, canvasSize.y / animationFrame));
+            module.OnDownDirection.Subscribe(source => PlayAnimation(source, verticalMinScale, verticalShiftValue, canvasSize.y / animationFrame));
+            module.OnRightDirection.Subscribe(source => PlayAnimation(source, horizontalMinScale, -horizontalShiftValue, canvasSize.x / animationFrame));
+            module.OnLeftDirection.Subscribe(source => PlayAnimation(source, horizontalMinScale, horizontalShiftValue, canvasSize.x / animationFrame));
         }
 
         gameObject.SetActive(false);
@@ -45,10 +48,11 @@ public class PanelAnimation : MonoBehaviour
             gameObject.SetActive(true);
             startFrame = Time.frameCount;
 
-            var targetPosition = sourceObject.transform.position;
-            LookAtHead(targetPosition);
-            uiTransform.localScale = minScale;
+            var forwardOffset = head.transform.forward * 0.3f;
+            var targetPosition = sourceObject.transform.position + forwardOffset;
             uiTransform.position = targetPosition + initialShift;
+            uiTransform.localScale = minScale;
+            LookAtHead(targetPosition);
 
             await UpdateAnimation(defaultScale, targetPosition, maxDistanceDelta);
         }
@@ -70,7 +74,8 @@ public class PanelAnimation : MonoBehaviour
             while (animationFrame - (Time.frameCount - startFrame) > 0f)
             {
                 await UniTask.Yield(PlayerLoopTiming.Update, cts.Token);
-                uiTransform.localScale = Vector3.MoveTowards(uiTransform.localScale, targetScale, maxDistanceDelta);
+                //TODO x, y軸で処理分け
+                uiTransform.localScale = Vector3.MoveTowards(uiTransform.localScale, targetScale, maxDistanceDelta * defaultScale.y * 2);
                 uiTransform.position = Vector3.MoveTowards(uiTransform.position, targetPosition, maxDistanceDelta / 2);
             }
         }

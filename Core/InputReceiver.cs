@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 using VRUtils.Components;
+using VRUtils.InputModule;
 
 namespace Components.Controller
 {
-public class InputModule : MonoBehaviour, IInputModule
+public class InputReceiver : MonoBehaviour, IInputModule
 {
     [SerializeField] private InputType inputType;
     [SerializeField] private UnityEvent onReceiveInput;

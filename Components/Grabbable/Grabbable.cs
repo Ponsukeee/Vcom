@@ -1,7 +1,6 @@
-﻿using Components.Controller;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
-using VRUtils.Components;
+using VRUtils.InputModule;
 
 namespace VRUtils.Components
 {
@@ -30,8 +29,8 @@ public class Grabbable : GrabbableBase, IInputModule
                 onDrop?.Invoke();
                 Release(deviceInfo);
                 return null;
-            case InputType.Drag:
-            case InputType.SubDrag:
+            case InputType.Clicking:
+            case InputType.SubClicking:
                 Drag(deviceInfo);
                 break;
             case InputType.Up:

@@ -19,7 +19,8 @@ public class AvatarSynchronizer : MonoBehaviour
     {
         if (isMine)
         {
-            //TODO 接続数が２以上のときのみ送信するようにする
+//            if (!GamingHubReceiver.IsSynchronizing) return;
+            
             if (count >= 5)
             {
                 var avatarTransform = GameClient.CreateAvatarTransform(head, rightHand, leftHand);
