@@ -73,8 +73,8 @@ public class Client : MonoBehaviour
     {
         var avatarData = await User.DownloadVrmAsync();
         await Avatar.GenerateAvatar(avatarData);
-        Player.instance.rightHand.GetComponentInChildren<RenderModel>().gameObject.SetActive(false);
-        Player.instance.leftHand.GetComponentInChildren<RenderModel>().gameObject.SetActive(false);
+        Player.instance.rightHand.GetComponentInChildren<RenderModel>()?.gameObject.SetActive(false);
+        Player.instance.leftHand.GetComponentInChildren<RenderModel>()?.gameObject.SetActive(false);
 
         var synchronizer = Avatar.Root.AddComponent<AvatarSynchronizer>();
         synchronizer.SetTargets(Avatar.Head, Avatar.RightHand, Avatar.LeftHand);
