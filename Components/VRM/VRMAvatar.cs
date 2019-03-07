@@ -2,7 +2,7 @@
 using UniRx.Async;
 using UnityEngine;
 
-namespace MagicOnionClient
+namespace VRSNS.VRM
 {
 public class VRMAvatar
 {

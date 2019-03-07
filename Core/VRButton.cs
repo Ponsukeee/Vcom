@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Threading;
-using Components.Controller;
 using UniRx.Async;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using VRUtils.Components;
+using VRUtils.InputModule;
 
 [RequireComponent(typeof(Image))]
 public class VRButton : MonoBehaviour, IInputModule
@@ -17,7 +16,7 @@ public class VRButton : MonoBehaviour, IInputModule
     private Color targetColor;
     private Vector3 defaultScale;
     private Vector3 targetScale;
-    private CancellationTokenSource cts;
+    private CancellationTokenSource cts = new CancellationTokenSource();
     
     private void Awake()
     {
@@ -26,7 +25,6 @@ public class VRButton : MonoBehaviour, IInputModule
         targetColor = defaultColor;
         defaultScale = transform.localScale;
         targetScale = transform.localScale;
-        cts = new CancellationTokenSource();
     }
 
     private void Update()
@@ -42,10 +40,11 @@ public class VRButton : MonoBehaviour, IInputModule
 
     private async UniTask UpdateAnimation()
     {
+        var animationFrame = 12;
         try
         {
             var startFrame = Time.frameCount;
-            while (12 - (Time.frameCount - startFrame) > 0f)
+            while (animationFrame - (Time.frameCount - startFrame) > 0f)
             {
                 await UniTask.Yield(PlayerLoopTiming.Update, cts.Token);
                 image.color = Color.Lerp(image.color, targetColor, 0.12f);
@@ -79,13 +78,19 @@ public class VRButton : MonoBehaviour, IInputModule
     {
         targetColor = defaultColor + highlightColor;
         targetScale = Vector3.Scale(defaultScale, new Vector3(1.1f, 1.1f, 1.1f));
-        await UpdateAnimation();
+        UpdateAnimation().Forget(e => { });
+//        await UpdateAnimation();
     }
 
     public async void OnUnset()
     {
         targetColor = defaultColor;
         targetScale = defaultScale;
-        await UpdateAnimation();
+        UpdateAnimation().Forget(e => { });
+//        await UpdateAnimation();
+    }
+
+    private void OnDestroy()
+    {
     }
 }

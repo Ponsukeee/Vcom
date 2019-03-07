@@ -1,7 +1,5 @@
-﻿using Components.Controller;
-using VRUtils.Components;
-using UnityEngine;
-using UnityEngine.Events;
+﻿using UnityEngine;
+using VRUtils.InputModule;
 
 namespace VRUtils.Components
 {
@@ -61,7 +59,7 @@ public abstract class CanvasBehaviourBase : GrabbableBase, IInputModule
             case InputType.Click:
                 parentScroll.Grab();
                 break;
-            case InputType.Drag:
+            case InputType.Clicking:
                 parentScroll.Drag(deviceInfo.GetDiffPosition(), deviceInfo.GetDeviceObject());
                 break;
             case InputType.Release:
@@ -76,7 +74,7 @@ public abstract class CanvasBehaviourBase : GrabbableBase, IInputModule
             case InputType.SubRelease:
                 Release(deviceInfo);
                 return null;
-            case InputType.SubDrag:
+            case InputType.SubClicking:
                 Drag(deviceInfo);
                 break;
             case InputType.SubDoubleClick:

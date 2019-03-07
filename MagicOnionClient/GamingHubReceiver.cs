@@ -3,6 +3,8 @@ using Grpc.Core;
 using MagicOnion.Client;
 using UniRx.Async;
 using UnityEngine;
+using VRSNS.Core;
+using VRSNS.VRM;
 using VRUtils.Components;
 
 namespace MagicOnionClient
@@ -11,9 +13,10 @@ public class GamingHubReceiver : IGamingHubReceiver
 {
     private readonly Dictionary<int, AvatarSynchronizer> playerSynchronizers = new Dictionary<int, AvatarSynchronizer>();
     private readonly Dictionary<int, VRMAvatar> playerAvatars = new Dictionary<int, VRMAvatar>();
+    private readonly Dictionary<int, VoiceChat> playerVoiceChats = new Dictionary<int, VoiceChat>();
     private readonly Dictionary<int, ObjectSynchronizer> objectSynchronizers = new Dictionary<int, ObjectSynchronizer>();
-    private int playerCount;
-    public bool IsSynchronizing => playerCount > 1;
+    private static int PlayerCount;
+    public static bool IsSynchronizing => PlayerCount > 1;
 
     public async UniTask<IGamingHub> ConnectAsync(Channel grpcChannel)
     {
@@ -23,19 +26,19 @@ public class GamingHubReceiver : IGamingHubReceiver
 
     void IGamingHubReceiver.OnJoinRoom(int id, string playerName, int playerCount)
     {
-        this.playerCount = playerCount;
+        PlayerCount = playerCount;
         Notification.Notify($"{playerName}が入室しました");
     }
 
     void IGamingHubReceiver.OnLeaveRoom(int id, string userName, int playerCount)
     {
-        this.playerCount = playerCount;
+        PlayerCount = playerCount;
 
         if (playerAvatars.TryGetValue(id, out var avatar))
         {
-            GameObject.DestroyImmediate(avatar.Root);
             playerSynchronizers.Remove(id);
             playerAvatars.Remove(id);
+            GameObject.DestroyImmediate(avatar.Root);
             Notification.Notify($"{userName}が退室しました");
         }
     }
@@ -68,8 +71,12 @@ public class GamingHubReceiver : IGamingHubReceiver
 
         var synchronizer = avatar.Root.AddComponent<AvatarSynchronizer>();
         synchronizer.SetTargets(avatar.Head, avatar.RightHand, avatar.LeftHand);
+
+        var voiceChat = avatar.Root.AddComponent<VoiceChat>();
+        
         playerSynchronizers[id] = synchronizer;
         playerAvatars[id] = avatar;
+        playerVoiceChats[id] = voiceChat;
     }
 
     void IGamingHubReceiver.OnInstantiate(int id, string resourceName)
@@ -105,9 +112,12 @@ public class GamingHubReceiver : IGamingHubReceiver
         }
     }
 
-    void IGamingHubReceiver.OnSpeak(int index, float[] segment)
+    void IGamingHubReceiver.OnSpeak(int id, int index, float[] segment)
     {
-        throw new System.NotImplementedException();
+        if (playerVoiceChats.TryGetValue(id, out var voiceChat))
+        {
+            voiceChat.VoiceStream(index, segment);
+        }
     }
 }
 }

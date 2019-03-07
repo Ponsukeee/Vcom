@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Grpc.Core;
 using UnityEngine;
+using VRSNS.VRM;
 using VRUtils.Components;
 
 namespace MagicOnionClient
@@ -86,7 +87,7 @@ public class GameClient
 
     public void SynchronizeAvatar(AvatarTransform avatarTransform)
     {
-        hub?.SynchronizeAvatarAsync(avatarTransform);
+        hub.SynchronizeAvatarAsync(avatarTransform);
     }
 
     public async Task DisposeAsync()
@@ -107,6 +108,11 @@ public class GameClient
         }
 
         return result;
+    }
+
+    public void Speak(int index, float[] segment)
+    {
+        hub.SpeakAsync(index, segment);
     }
 
     public Task WaitForDisconnect()

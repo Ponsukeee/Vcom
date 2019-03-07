@@ -1,5 +1,6 @@
 ﻿using MagicOnionClient;
 using TMPro;
+using VRSNS.Core;
 using VRUtils.Components;
 
 public class RoomInfoCanvas : FlatCanvasBehaviour
@@ -18,6 +19,6 @@ public class RoomInfoCanvas : FlatCanvasBehaviour
 
     public void JoinRoom()
     {
-        client.JoinRoom(roomID);
+        Client.JoinRoom(roomID);
     }
 }

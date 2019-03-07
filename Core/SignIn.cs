@@ -1,47 +1,24 @@
-﻿using Components.Controller;
-using TMPro;
+﻿using Michsky.UI.ModernUIPack;
 using UnityEngine;
-using VRUtils.Components;
 
 namespace VRSNS.Core
 {
 public class SignIn : MonoBehaviour
 {
-    [SerializeField] private Client client;
+    [SerializeField] private CustomInputField userName;
+    [SerializeField] private CustomInputField password;
+    [SerializeField] private CustomInputField passwordConfirm;
 
-    private async void Update()
+    public void SendInfo()
     {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            client.Signin("test", "test");
-        }
-        
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            client.LeaveRoom();
-        }
-        
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            Debug.Log("Start");
-            var roomInfos = await client.GetRooms();
-            foreach (var roomInfo in roomInfos)
-            {
-                Debug.Log($"オーナー = {roomInfo.OwnerName}, ID = {roomInfo.RoomID}");
-            }
-            Debug.Log(roomInfos.Length);
-        }
-        
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            var roomInfos = await client.GetRooms();
-            client.JoinRoom(roomInfos[0].RoomID);
-        }
+        if (!Client.InRoom)
+            Client.Signin(userName.inputText.text, password.inputText.text);
     }
 
-    public void Signin()
+    public void SendNewInfo()
     {
-        client.Signin("test", "test");
+        if (!Client.InRoom)
+            Client.CreateUser(userName.inputText.text, userName.inputText.text, password.inputText.text, passwordConfirm.inputText.text);
     }
 }
 }

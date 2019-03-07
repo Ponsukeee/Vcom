@@ -10,6 +10,6 @@ public interface IGamingHubReceiver
     void OnDestroy(int id);
     void OnSynchronizeAvatar(int id, AvatarTransform transform);
     void OnMoveObject(int id, ObjectTransform transform);
-    void OnSpeak(int index, float[] segment);
+    void OnSpeak(int id, int index, float[] segment);
 }
 }
