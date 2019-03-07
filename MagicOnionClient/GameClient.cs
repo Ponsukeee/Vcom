@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Grpc.Core;
 using UnityEngine;
+using VRSNS.VRM;
 using VRUtils.Components;
 
 namespace MagicOnionClient

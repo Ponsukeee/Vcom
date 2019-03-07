@@ -17,9 +17,9 @@ public class RoomInfoScroll : MonoBehaviour
         try
         {
             Hide();
-            if (!client.InRoom) return;
+            if (!Client.InRoom) return;
             
-            var roomInfos = await client.GetRooms();
+            var roomInfos = await Client.GetRooms();
             var scrollObject = new GameObject();
             scroll = scrollObject.AddComponent<CanvasScroll>();
             Vector3 halfCanvasSize = Vector3.zero;

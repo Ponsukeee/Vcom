@@ -1,6 +1,6 @@
 ﻿using TMPro;
-using UniRx;
 using UnityEngine;
+using Valve.VR.InteractionSystem;
 
 namespace VRSNS.Core
 {
@@ -14,7 +14,7 @@ public class VirtualKeyBoard : MonoBehaviour
     {
         if (KeyBoard != null)
         {
-            Debug.LogError("There are two objects with VirtualKeyBoard.");
+            Debug.LogWarning("There are two objects with VirtualKeyBoard.");
         }
 
         KeyBoard = gameObject;
@@ -42,16 +42,18 @@ public class VirtualKeyBoard : MonoBehaviour
         }
 
         handlingField = inputField;
+        handlingField.ActivateInputField();
+        handlingField.caretPosition = handlingField.text.Length;
+        handlingField.stringPosition = handlingField.text.Length;
+
+        KeyBoard.transform.position = Player.instance.hmdTransform.position + Player.instance.transform.forward * 0.5f + Vector3.up * -0.3f;
+        KeyBoard.transform.LookAt(Player.instance.hmdTransform);
+        KeyBoard.transform.Rotate(0f, 180f, 0f);
     }
 
-    public static void HideKeyBoard()
+    public void HideKeyBoard()
     {
         KeyBoard.SetActive(false);
-    }
-
-    public static void SetPosition(Vector3 position)
-    {
-        KeyBoard.transform.position = position;
     }
 
     public static void Input(string value)

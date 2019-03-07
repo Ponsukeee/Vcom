@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Threading;
-using Components.Controller;
 using UniRx.Async;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using VRUtils.Components;
 using VRUtils.InputModule;
 
 [RequireComponent(typeof(Image))]

@@ -3,8 +3,9 @@ using System.IO;
 using UniRx.Async;
 using UnityEngine;
 using UnityEngine.Networking;
+using VRUtils.Components;
 
-namespace WebClient
+namespace RestClient
 {
 [Serializable]
 public class User
@@ -48,6 +49,7 @@ public class User
         var request = UnityWebRequest.Post(url + "users/signin", form);
         await request.SendWebRequest();
         Debug.Log(request.downloadHandler.text);
+        Notification.Notify("サインインに成功しました");
         try
         {
             return JsonUtility.FromJson<User>(request.downloadHandler.text);

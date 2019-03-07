@@ -1,9 +1,9 @@
-﻿using Components.Controller;
+﻿using System;
+using System.Threading;
 using Michsky.UI.ModernUIPack;
 using TMPro;
+using UniRx.Async;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using VRUtils.Components;
 using VRUtils.InputModule;
 
 namespace VRSNS.Core
@@ -12,11 +12,37 @@ public class InputFieldModuleBehaviour : MonoBehaviour, IInputModule
 {
     private CustomInputField customInputField;
     private TMP_InputField inputField;
+    
+    private Vector3 defaultScale;
+    private Vector3 targetScale;
+    private CancellationTokenSource cts = new CancellationTokenSource();
 
     private void Awake()
     {
         customInputField = GetComponent<CustomInputField>();
         inputField = customInputField.inputText;
+        
+        defaultScale = transform.localScale;
+        targetScale = transform.localScale;
+    }
+
+    private async UniTask UpdateAnimation()
+    {
+        var animationFrame = 12;
+        try
+        {
+            var startFrame = Time.frameCount;
+            while (animationFrame - (Time.frameCount - startFrame) > 0f)
+            {
+                await UniTask.Yield(PlayerLoopTiming.Update, cts.Token);
+                transform.localScale = Vector3.Lerp(transform.localScale, targetScale, 0.12f);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.Log("UniTask.Yield is cancelled");
+            throw;
+        }
     }
 
     public IInputModule HandleInput(InputType input, DeviceInfo deviceInfo)
@@ -24,9 +50,7 @@ public class InputFieldModuleBehaviour : MonoBehaviour, IInputModule
         if (input == InputType.Click)
         {
             customInputField.Animate();
-            inputField.ActivateInputField();
             VirtualKeyBoard.EnableInput(inputField);
-            VirtualKeyBoard.SetPosition(transform.position + Vector3.up * 1f);
         }
 
         return null;
@@ -34,14 +58,15 @@ public class InputFieldModuleBehaviour : MonoBehaviour, IInputModule
 
     public void OnSet()
     {
-//        if (inputField)
-//            inputField.placeholder.color = Color.cyan;
+        var value = 1.05f;
+        targetScale = Vector3.Scale(defaultScale, new Vector3(value, value, value));
+        UpdateAnimation().Forget(e => { });
     }
 
     public void OnUnset()
     {
-//        if (inputField)
-//            inputField.placeholder.color = Color.gray;
+        targetScale = defaultScale;
+        UpdateAnimation().Forget(e => { });
     }
 }
 }

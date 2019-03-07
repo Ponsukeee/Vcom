@@ -4,29 +4,22 @@ namespace VRSNS.Core
 {
 public class ClientTest : MonoBehaviour
 {
-    private Client client;
-    
-    private void Awake()
-    {
-        client = GetComponent<Client>();
-    }
-
     private async void Update()
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            client.Signin("test", "test");
+            Client.Signin("test", "test");
         }
         
         if (Input.GetKeyDown(KeyCode.B))
         {
-            client.LeaveRoom();
+            Client.LeaveRoom();
         }
         
         if (Input.GetKeyDown(KeyCode.C))
         {
             Debug.Log("Start");
-            var roomInfos = await client.GetRooms();
+            var roomInfos = await Client.GetRooms();
             foreach (var roomInfo in roomInfos)
             {
                 Debug.Log($"オーナー = {roomInfo.OwnerName}, ID = {roomInfo.RoomID}");
@@ -36,8 +29,8 @@ public class ClientTest : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.D))
         {
-            var roomInfos = await client.GetRooms();
-            client.JoinRoom(roomInfos[0].RoomID);
+            var roomInfos = await Client.GetRooms();
+            Client.JoinRoom(roomInfos[0].RoomID);
         }
     }
 }

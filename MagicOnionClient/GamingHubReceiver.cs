@@ -4,6 +4,7 @@ using MagicOnion.Client;
 using UniRx.Async;
 using UnityEngine;
 using VRSNS.Core;
+using VRSNS.VRM;
 using VRUtils.Components;
 
 namespace MagicOnionClient

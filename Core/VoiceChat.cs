@@ -103,7 +103,7 @@ public class VoiceChat : MonoBehaviour
         if(localIndex >= 0 && localIndex < 10)
         {
             playClip.SetData(segment, localIndex * segment.Length);
-            Debug.Log(segment[0]);
+//            Debug.Log(segment[0]);
         }
         
         if(++count == 10 - 1)
@@ -138,7 +138,7 @@ public class VoiceChat : MonoBehaviour
                     samples = temp;
                     sampleCount++;
                     OnSampleReady?.Invoke(sampleCount, samples);
-                    Debug.Log("send");
+//                    Debug.Log("send");
 
                     readAbsPos = nextReadAbsPos;
                     isNewDataAvailable = true;

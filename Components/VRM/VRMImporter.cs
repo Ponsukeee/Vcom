@@ -4,7 +4,7 @@ using UniRx.Async;
 using UnityEngine;
 using VRM;
 
-namespace MagicOnionClient
+namespace VRSNS.VRM
 {
 public class VRMImporter
 {

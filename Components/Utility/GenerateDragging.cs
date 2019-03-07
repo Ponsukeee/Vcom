@@ -1,6 +1,4 @@
-﻿using Components.Controller;
-using VRUtils.Components;
-using VRUtils.InputModule;
+﻿using VRUtils.InputModule;
 
 namespace VRUtils.Components
 {
