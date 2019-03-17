@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Grpc.Core;
 using UnityEngine;
+using VRSNS.Core;
 using VRSNS.VRM;
 using VRUtils.Components;
 
@@ -92,10 +93,13 @@ public class GameClient
 
     public async Task DisposeAsync()
     {
+        if (Client.InRoom)
+            await hub.LeaveRoomAsync();
+        
         if (hub != null)
         {
             await hub.DisposeAsync();
-            await channel.ShutdownAsync();
+//            await channel.ShutdownAsync();
         }
     }
 

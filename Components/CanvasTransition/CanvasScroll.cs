@@ -32,9 +32,8 @@ public class CanvasScroll : MonoBehaviour
         Vertical,
     }
 
-    public class UnityEventGameObject : UnityEvent<GameObject>{}
-    public UnityEventGameObject OnPlusAction { get; } = new UnityEventGameObject();
-    public UnityEventGameObject OnMinusAction { get; } = new UnityEventGameObject();
+    public UnityEvent OnPlusAction { get; } = new UnityEvent();
+    public UnityEvent OnMinusAction { get; } = new UnityEvent();
 
     private Vector3 centerPosition;
     private CanvasBehaviourBase CenterCanvas => canvasList[CenterIndex];
@@ -193,14 +192,14 @@ public class CanvasScroll : MonoBehaviour
     {
         centerPosition[actionAxis] = 0f;
         isGrabbed = false;
-        OnPlusAction.Invoke(handlerObject);
+        OnPlusAction.Invoke();
     }
 
     private void MinusAction(GameObject handlerObject)
     {
         centerPosition[actionAxis] = 0f;
         isGrabbed = false;
-        OnMinusAction.Invoke(handlerObject);
+        OnMinusAction.Invoke();
     }
 
     public void SelectCanvas(CanvasBehaviourBase canvas)

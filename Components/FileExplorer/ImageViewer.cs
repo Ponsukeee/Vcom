@@ -6,12 +6,12 @@ namespace VRUtils.Components
 {
 public class ImageViewer : MonoBehaviour, IViewer
 {
-    public void Display(string filePath, GameObject handlerObject)
+    public void Display(string filePath)
     {
-        StartCoroutine(ViewImage(filePath, handlerObject));
+        StartCoroutine(ViewImage(filePath));
     }
     
-    private IEnumerator ViewImage(string filePath, GameObject handelerObject)
+    private IEnumerator ViewImage(string filePath)
     {
         var canvas = GetComponentInChildren<Canvas>();
         var rawImage = canvas.gameObject.AddComponent<RawImage>();

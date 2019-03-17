@@ -6,7 +6,7 @@ namespace VRUtils.Components
 {
 public class TextViewer : MonoBehaviour, IViewer
 {
-    public void Display(String filePath, GameObject handlerObject)
+    public void Display(String filePath)
     {
         var streamReader = System.IO.File.OpenText(filePath);
         var text = streamReader.ReadToEnd();

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections;
-using MagicOnionClient;
 using UnityEngine;
+using Valve.VR.InteractionSystem;
+using VRUtils.InputModule;
 
 namespace VRSNS.Core
 {
@@ -19,6 +20,9 @@ public class VoiceChat : MonoBehaviour
     private int frequencySamples = 16000;
     private float[] empty;
 
+    //TODO プッシュトゥトークは別クラスから操作するように変更
+    private IInputDevice[] inputDevices;
+
     private void Awake()
     {
         audio = gameObject.AddComponent<AudioSource>();
@@ -26,8 +30,10 @@ public class VoiceChat : MonoBehaviour
         playClip = AudioClip.Create("clip", lengthSamples, 1, frequencySamples, false);
         audio.clip = playClip;
         audio.loop = true;
-        samples = new float[lengthSamples/10];
+        samples = new float[lengthSamples / 10];
         empty = new float[samples.Length];
+
+        inputDevices = Player.instance.GetComponentsInChildren<IInputDevice>();
     }
 
     private void Update()
@@ -41,19 +47,21 @@ public class VoiceChat : MonoBehaviour
 //        {
 //            StopVoiceChat();
 //        }
-        
+
         //前回再生した配列を空にする
-        if (isRecording)
-        {
-            var playIndex = (int) (audio.Position() * 10);
-            if (playIndex == 10) playIndex--;
-            
-            if (lastIndex != playIndex)
-            {
-                playClip.SetData(empty, lastIndex * samples.Length);
-                lastIndex = playIndex;
-            }
-        }
+//        if (isRecording)
+//        {
+//            var playIndex = (int) (audio.Position() * 10);
+//            if (playIndex == 10) playIndex--;
+//            Debug.Log(audio.isPlaying);
+//            Debug.Log($"last = {lastIndex}, play = {playIndex}");
+//
+//            if (lastIndex != playIndex)
+//            {
+//                playClip.SetData(empty, lastIndex * samples.Length);
+//                lastIndex = playIndex;
+//            }
+//        }
     }
 
     public void StartVoiceChat()
@@ -62,7 +70,7 @@ public class VoiceChat : MonoBehaviour
         micClip = Microphone.Start(null, true, 1, frequencySamples);
         StartCoroutine(ReadRawAudio());
     }
-    
+
     public void StopVoiceChat()
     {
         if (!Microphone.IsRecording(null)) return;
@@ -100,13 +108,13 @@ public class VoiceChat : MonoBehaviour
         }
 
         var localIndex = (index + offset) % 10;
-        if(localIndex >= 0 && localIndex < 10)
+        if (localIndex >= 0 && localIndex < 10)
         {
             playClip.SetData(segment, localIndex * segment.Length);
 //            Debug.Log(segment[0]);
         }
-        
-        if(++count == 10 - 1)
+
+        if (++count == 10 - 1)
             audio.Play();
     }
 
@@ -137,8 +145,13 @@ public class VoiceChat : MonoBehaviour
                     micClip.GetData(temp, readAbsPos % micClip.samples);
                     samples = temp;
                     sampleCount++;
-                    OnSampleReady?.Invoke(sampleCount, samples);
+                    
+                    //プッシュトゥトーク
+                    if (inputDevices[0].DownSidePadPressing() || inputDevices[1].DownSidePadPressing() || Input.GetKey(KeyCode.E))
+                    {
+                        OnSampleReady?.Invoke(sampleCount, samples);
 //                    Debug.Log("send");
+                    }
 
                     readAbsPos = nextReadAbsPos;
                     isNewDataAvailable = true;
@@ -161,11 +174,6 @@ public class VoiceChat : MonoBehaviour
 
 public static class Extensions
 {
-    /// <summary>
-    /// Returns the position on of the AudioSource on the AudioClip from 0 to 1.
-    /// </summary>
-    /// <param name="source"></param>
-    /// <returns></returns>
     public static float Position(this AudioSource source)
     {
         return (float) source.timeSamples / source.clip.samples;

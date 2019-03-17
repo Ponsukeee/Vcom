@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections;
-using VRUtils.Components;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.Video;
 
 namespace VRUtils.Components
 {
@@ -35,7 +30,12 @@ public class File : MonoBehaviour
         GetComponentInChildren<TextMeshProUGUI>().text = name;
     }
 
-    public void Open(GameObject canvasBehaviour, GameObject handlerObject)
+    public byte[] ReadAllBytes()
+    {
+        return System.IO.File.ReadAllBytes(FilePath);
+    }
+    
+    public void Open(GameObject canvasBehaviour)
     {
         var array = fileName.Split('.');
         var extension = array[array.Length - 1];
@@ -65,7 +65,7 @@ public class File : MonoBehaviour
                     break;
             }
 
-            viewer?.Display(FilePath, handlerObject);
+            viewer?.Display(FilePath);
         }
         catch (System.IO.IOException e)
         {
