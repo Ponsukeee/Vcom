@@ -66,7 +66,7 @@ public abstract class CanvasBehaviourBase : GrabbableBase, IInputModule
                 parentScroll.Release(deviceInfo.GetVelocity() + deviceInfo.GetAngularVelocity());
                 return null;
             case InputType.DoubleClick:
-                parentScroll.OnPlusAction.Invoke(deviceInfo.GetDeviceObject());
+                parentScroll.OnPlusAction.Invoke();
                 return null;
             case InputType.SubClick:
                 Grab(deviceInfo);
@@ -78,7 +78,7 @@ public abstract class CanvasBehaviourBase : GrabbableBase, IInputModule
                 Drag(deviceInfo);
                 break;
             case InputType.SubDoubleClick:
-                parentScroll.OnMinusAction.Invoke(deviceInfo.GetDeviceObject());
+                parentScroll.OnMinusAction.Invoke();
                 break;
         }
         

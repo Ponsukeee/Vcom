@@ -8,7 +8,6 @@ namespace VRSNS.Core
 {
 public class RoomInfoScroll : MonoBehaviour
 {
-    [SerializeField] private Client client;
     [SerializeField] private RoomInfoCanvas roomInfoCanvas;
     private CanvasScroll scroll;
 
@@ -28,7 +27,7 @@ public class RoomInfoScroll : MonoBehaviour
                 var instantiatedCanvas = scroll.AddCanvas(roomInfoCanvas.gameObject, $"{roomInfo.OwnerName}'s Room");
                 var canvas = instantiatedCanvas.GetComponent<RoomInfoCanvas>();
                 canvas.SetParentScroll(scroll);
-                canvas.Initialize(roomInfo, client);
+                canvas.Initialize(roomInfo);
                 halfCanvasSize = Vector3.Scale(canvas.CanvasSize(), Vector3.right) / 2;
             }
 

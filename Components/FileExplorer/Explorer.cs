@@ -37,7 +37,7 @@ public class Explorer : MonoBehaviour, IGeneratable
         rootDirectory.Initialize(ROOT_PATH, "");
     }
 
-    public void Open(GameObject handlerObject)
+    public void Open()
     {
         if (scrollList.Count == 0)
         {
@@ -55,7 +55,7 @@ public class Explorer : MonoBehaviour, IGeneratable
         var file = CurrentScroll.SelectedCanvas.GetComponent<File>();
         if (file != null)
         {
-            OpenFile(file, handlerObject);
+            OpenFile(file);
         }
     }
 
@@ -75,12 +75,20 @@ public class Explorer : MonoBehaviour, IGeneratable
         scrollList.Add(newScroll);
     }
 
-    private void OpenFile(File file, GameObject handlerObject)
+    private void OpenFile(File file)
     {
-        file.Open(viewerCanvas, handlerObject);
+        file.Open(viewerCanvas);
     }
 
-    public void Return(GameObject handlerObject)
+    public void CloseAll()
+    {
+        foreach (var scroll in scrollList)
+        {
+            DestroyImmediate(scroll.gameObject);
+        }
+    }
+
+    public void Return()
     {
         var removeScroll = CurrentScroll;
         scrollList.Remove(removeScroll);

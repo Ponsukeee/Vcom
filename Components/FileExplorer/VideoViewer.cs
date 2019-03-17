@@ -7,12 +7,12 @@ namespace VRUtils.Components
 {
 public class VideoViewer : MonoBehaviour, IViewer
 {
-    public void Display(string filePath, GameObject handlerObject)
+    public void Display(string filePath)
     {
-        StartCoroutine(VideoPlayStart(filePath, handlerObject));
+        StartCoroutine(VideoPlayStart(filePath));
     }
     
-    private IEnumerator VideoPlayStart(string filePath, GameObject handlerObject)
+    private IEnumerator VideoPlayStart(string filePath)
     {
         var canvas = GetComponentInChildren<Canvas>();
         var videoPlayer = canvas.gameObject.AddComponent<VideoPlayer>();
